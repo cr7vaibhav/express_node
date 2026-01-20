@@ -1,6 +1,11 @@
+const cors =require('cors')
 const express = require('express') // import express using require()
 const app = express() // create an app that represents your webserver using the express()
 // s the app var is used to define routes ,add middleware and control how server responds to request 
+
+app.use(cors({
+origin: ['http://localhost:5500' , 'http://127.0.0.1:5500'] //allows to whitelist that can access backend 
+}))
 
 app.get('/', (req, res) => {
 res.send('Hello from express')
@@ -37,6 +42,10 @@ app.get('/products/:id', (req, res) => {
 })//a route parameter is a variable inside a url that let you server handle dynamic values, like /product/5 or /users/abc123
 // in express you write this with a colon /products/:id
 //whatever repalaces :id in the url becomes the req.params.id in your route handler
+
+app.get('/message', (req, res) => {
+    res.json({message: 'Hello from the backend'})
+})
 
 app.listen(3000,() => { // we tell express to listen on a port 3000 to start the server
     console.log('Server running')

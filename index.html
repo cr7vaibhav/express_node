@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Front-End</title>
+</head>
+<body>
+<h1>Bello</h1>
+<button>Get message</button>
+<script>
+     const heading =document.querySelector('h1')
+     const button=document.querySelector('button')
+
+     button.addEventListener('click', () => {
+        fetch('http://localhost:3000/message')//sends a fetch req from browser to backend 
+        .then(response => {
+            if(!response.ok){
+                throw new Error('Server error: ${response.status} ${response.statusText}')
+            }
+            return response.json //this tells the browser read the response.body and convert the json into a normal js obj
+        })
+        .then(data => {
+            heading.textContent =data.message
+        })
+        .catch(err => {
+            console.error(err)
+        })
+ })
+</script>
+</body>
+</html>
