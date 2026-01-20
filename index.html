@@ -4,19 +4,19 @@
 <title>Front-End</title>
 </head>
 <body>
-<h1>Bello</h1>
-<button>Get message</button>
+<!-- <h1>Bello</h1>
+<button>Get message</button> 
 <script>
      const heading =document.querySelector('h1')
      const button=document.querySelector('button')
 
      button.addEventListener('click', () => {
-        fetch('http://localhost:3000/message')//sends a fetch req from browser to backend 
+        fetch('http://localhost:3000/message')//sends a fetch req from browser to backend  when the button is clicked this triggers the message get request in express backend
         .then(response => {
             if(!response.ok){
                 throw new Error('Server error: ${response.status} ${response.statusText}')
             }
-            return response.json //this tells the browser read the response.body and convert the json into a normal js obj
+            return response.json() //this tells the browser read the response.body and convert the json into a normal js obj
         })
         .then(data => {
             heading.textContent =data.message
@@ -25,6 +25,40 @@
             console.error(err)
         })
  })
+</script> -->
+
+<form id="contact-form">
+    <input id='name' placeholder='name'>
+    <textarea id ='message' placeholder='message'></textarea>
+    <button>Submit</button>
+</form>
+
+<script> 
+    const form = document.getElementById('contact-form')
+    const nameInput =document.getElementById('name')
+    const messageTextarea= document.getElementById('message')
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault() //prevetns the default form behavior which is refresh
+
+        const name= nameInput.value
+        const message= messageTextarea.value
+
+        fetch('http://localhost:3000/message',{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, message })
+        })
+// since fetch() normally sends a GET req we have to set method: 'POST' so that we can send out form data as POST request
+//  in the Content-Type header we are teliing the serve that we are sending data as JSON format .
+//  The actual data is sent in the body property . We use the JSON.stringify() to convert our JS obj into JSON text format
+.then(response => response.json())
+.then(data =>{
+    console.log('Response form server', data);
+})
+    })
 </script>
 </body>
 </html>

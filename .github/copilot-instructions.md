@@ -1,67 +1,64 @@
 # AI Coding Agent Instructions
 
 ## Project Overview
-This is a minimal Express.js Node.js application. The project serves as a foundation for building REST APIs and server applications using Express. Currently at bootstrap stage with Express dependency installed but routes/middleware not yet implemented.
+Express.js REST API server with CORS enabled. Currently implements basic product listing routes and serves frontend from localhost:5500. A working foundation for expanding API functionality and database integration.
 
 ## Architecture & Setup
 
 ### Key Entry Point
-- **[server.js](../server.js)** - Application entry point; currently initializes Express instance but lacks configuration, middleware, or route handlers. Expand here with:
-  - Middleware setup (body parsing, CORS, logging)
-  - Route definitions
-  - Error handling
-  - Server listening initialization
+- **[server.js](../server.js)** - Main application server
+  - CORS middleware configured for localhost:5500 (Live Server port)
+  - Routes: `GET /`, `/about`, `/contact`, `/products`, `/products/:id`, `/message`
+  - Listens on port 3000
+  - Uses hardcoded product data (ready for database migration)
 
-### Project Configuration
-- **[package.json](../package.json)** - Main dependency: Express 5.2.1 (latest)
-- **Entry point**: `main: index.js` (note: actual server is `server.js` - align these or add exports wrapper)
-- **Type**: CommonJS modules (using `require()`)
+### Project Structure
+- **[package.json](../package.json)** - Express 5.2.1 + CORS 2.8.5; missing `"start"` script
+- **[index.html](../index.html)** - Frontend file (served by Live Server on port 5500)
+- **Type**: CommonJS modules (`require()`/`module.exports`)
 
-## Development Workflow
+## Current Patterns & Data Flow
 
-### Installation & Running
-```bash
-npm install           # Install dependencies (Express already added)
-npm start            # No start script defined - add: "start": "node server.js"
-npm test             # No tests configured - add test script as needed
-```
-
-### Recommended Enhancements
-1. Add `start` script to package.json for easy server launch
-2. Add PORT environment variable handling (e.g., `process.env.PORT || 3000`)
-3. Add `.gitignore` with `node_modules/`, `.env`, common OS files
-4. Add development server (nodemon) for local development
-
-## Conventions & Patterns
-
-### Express Setup Pattern
-When expanding routes/middleware in server.js, follow this structure:
+### Route Pattern
+Routes return either plain text (`res.send()`) or JSON (`res.json()`):
 ```javascript
-// 1. Middleware (body parsers, CORS, logging)
-app.use(express.json())
+app.get('/products', (req, res) => {
+  res.json([
+    {id:1, name: 'laptop', price: 1299},
+    {id:2, name: 'mouse', price: 50}
+  ])
+})
 
-// 2. Route handlers
-app.get('/', (req, res) => { ... })
-
-// 3. Error handling
-app.use((err, req, res, next) => { ... })
-
-// 4. Server initialization
-const PORT = process.env.PORT || 3000
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
+// Dynamic routes use URL parameters
+app.get('/products/:id', (req, res) => {
+  const id = Number(req.params.id)
+  // Search products array and return matching item
+})
 ```
 
-### CommonJS Standard
-- Use `require()` for imports, `module.exports` for exports
-- Avoid mixing CommonJS and ES modules
+### CORS Configuration
+Whitelist is hardcoded for development:
+```javascript
+app.use(cors({
+  origin: ['http://localhost:5500', 'http://127.0.0.1:5500']
+}))
+```
 
-## Critical Notes for AI Agents
+## Critical Implementation Notes
 
-- **Incomplete State**: This is bootstrap code; most application logic needs to be implemented
-- **Missing: Route handlers, middleware, error handling, environment configuration**
-- **Type**: CommonJS only - do not introduce ES modules (import/export) without explicit requirement
-- **Dependencies**: Only Express 5.2.1 as runtime dependency; add dev dependencies (nodemon, testing frameworks) as needed
-- **No external services yet**: Plan database/API integrations in dedicated middleware/route layers
+- **No start script** - Add `"start": "node server.js"` to package.json scripts
+- **Port hardcoded** - Add `const PORT = process.env.PORT || 3000` and replace `3000`
+- **No error handling** - Consider adding try-catch in route handlers for robustness
+- **Static data** - Products are hardcoded arrays; next step is database (MongoDB/PostgreSQL) integration
+- **No body parsing middleware** - If adding POST/PUT routes, add `app.use(express.json())`
+- **CommonJS only** - Do not introduce ES6 imports/exports without explicit requirement
+
+## Next Steps for Expansion
+1. Add POST/PUT/DELETE routes for product management
+2. Migrate hardcoded products to database with query middleware
+3. Add request validation and error handling middleware
+4. Extract routes into separate files (routes/products.js pattern)
+5. Add environment variables (.env support with dotenv package)
 
 ---
-*Last updated: January 2026*
+*Last updated: January 20, 2026*

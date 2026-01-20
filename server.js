@@ -1,11 +1,18 @@
 const cors =require('cors')
 const express = require('express') // import express using require()
-const app = express() // create an app that represents your webserver using the express()
-// s the app var is used to define routes ,add middleware and control how server responds to request 
+const productsRouter =require('./products') //this add a product router for products.js file next mount the file
+const app = express() // create an app that represents your webserver using the express() the app var is used to define routes, 
+// add middleware and control how server responds to request 
 
 app.use(cors({
 origin: ['http://localhost:5500' , 'http://127.0.0.1:5500'] //allows to whitelist that can access backend 
 }))
+
+app.use(express.json()) //json body parasing lets u send data from frontend
+
+app.use('/products', productsRouter) //mount the products router on the /products path
+//express executes from top to bottom say if you put app.use(express.json()) below you post routes then req.body will be undefined in those routes
+//same also applies inside a router file 
 
 app.get('/', (req, res) => {
 res.send('Hello from express')
@@ -21,30 +28,17 @@ app.get('/contact', (req, res) => {
     res.send('yo wassup')
 })
 
-app.get('/products', (req, res) => {
-    res.json([
-        {id:1, name: 'laptop', price: 1299},
-        {id:2, name: 'mouse', price: 50},
-
-    ])
-})//real api's communicate using json JavaScript Object notation text format used to represent structured data 
-// can use res.json() to send a response as json
-
-app.get('/products/:id', (req, res) => {
-    const id= Number(req.params.id)
-
-    const products=[
-        {id:1, name: 'laptop', price: 1299}, 
-        {id:2, name: 'mouse', price: 50},
-    ]
-    const requestedProduct =products.find((product) => product.id === id)
-    res.json(requestedProduct)
-})//a route parameter is a variable inside a url that let you server handle dynamic values, like /product/5 or /users/abc123
-// in express you write this with a colon /products/:id
-//whatever repalaces :id in the url becomes the req.params.id in your route handler
-
 app.get('/message', (req, res) => {
-    res.json({message: 'Hello from the backend'})
+    res.json({message: 'Hello from the backend 🥀'})
+})
+
+app.post('/message', (req, res) => {
+const{name, message} = req.body // using destructuring
+//now you can store the data in a db
+
+console.log('new message: ', name, message)
+res.json({message: 'thanks for your message 👍'})
+
 })
 
 app.listen(3000,() => { // we tell express to listen on a port 3000 to start the server
