@@ -8,6 +8,15 @@ app.use(cors({
 origin: ['http://localhost:5500' , 'http://127.0.0.1:5500'] //allows to whitelist that can access backend 
 }))
 
+
+// A middleware is simply a function that runs between the incoming request and the final route handler it recives
+//  a request and response it can read and change them and then either finish the response or handover to control the next middleware in the chain
+app.use((req,res,next)=>{
+    console.log(req.method,req.path)
+    next() //without the next the req will get stuck in the middleware and will never reach the routehandler 
+}) // this is a simple custom middleware that will console log everytime we visit a diff route
+//since this is placed above the routes it will all go through this middleware if this is placed below the routes nothing will get logged
+
 app.use(express.json()) //json body parasing lets u send data from frontend
 
 app.use('/products', productsRouter) //mount the products router on the /products path
